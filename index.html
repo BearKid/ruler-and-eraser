@@ -14,35 +14,46 @@
 
     body {
         margin: 0;
-        background-image: url("img/3.jpeg");
         background-size: cover;
         background-position: center;
     }
 
-    #title {
-        margin: 1em;
-        /*font-family: "Lucida Console", Monaco, monospace;*/
-        font-family: 'Sriracha', cursive;
+    .title {
         color: #e84511;
+        font-size: 2em;
+        font-family: 'Sriracha', cursive;
         text-align: center
+    }
+
+    #titleInPic {
+        display: none;
+        margin: 1em;
+        font-size: 2em;
     }
 
     #blackboard {
         /*display: block;*/
-        display: none;
+        display: block;
         padding: 2em 1em;
-        margin: 2em;
-        max-width: 1000px;
+        margin: 40% auto;
         max-height: 500px;
-        background-color: rgb(0, 0, 0, 0.8);
+        background-color: rgb(0, 0, 0, 0.6);
         text-align: center;
-        font-size: 1.5em;
         color: #fff;
         font-family: 'Sriracha', cursive;
         border-radius: 5px;
     }
 
+    #titleInBlackBoard {
+        font-size: 3em;
+    }
+
+    #blackboardText {
+        font-size: 1.5em;
+    }
+
     #comment {
+        display: none;
         width: 100%;
         background-color: rgb(0, 0, 0, 0.7);
         position: absolute;
@@ -66,8 +77,10 @@
 </style>
 <body id="picutreBg" style="font-size: 32px">
 
-<h1 id="title">Ruler And Eraser</h1>
-<div id="blackboard"><p id="blackboardText"></p></div>
+<div id="blackboard">
+    <div id="titleInBlackBoard" class="title">Ruler And Eraser</div>
+    <div id="blackboardText"></div>
+</div>
 <div id="comment">
     <div id="commentText">Eraser每年都会过几次「生日」—— 为了吃蛋糕</div>
     <i id="nextPictureBtn" class="icon-right-open-outline"></i>
@@ -116,25 +129,74 @@
 
 </script>
 <script>
+    // 初始化背景
+    $("#picutreBg").css("background-image", "url(img/1.jpeg)")
+
     // 标题 动画
     anime({
-        targets: '#title',
+        targets: '.title',
         translateX: 0,
-        rotate: '1turn',
-        // duration: 4000
+        keyframes: [
+            {rotate: '0turn'},
+            {rotate: '8deg'},
+            {rotate: '-8deg'},
+            {rotate: '0deg'},
+            {rotate: '4deg'},
+            {rotate: '0deg'},
+        ],
+        // easing: 'easeOutElastic(9, 1)',
+        easing: 'spring(0, 90, 5, 0)',
+        loop: true,
+        endDelay: 5000
     });
 
+    $("#titleInBlackBoard").click(function () {
+        const $blackboard = $("#blackboard")
+        $blackboard.data("origin-height", $blackboard.height())
+        $blackboard.data("origin-width", $blackboard.width())
+        anime({
+            targets: '#blackboard',
+            opacity: "0",
+            width: "0",
+            height: "0",
+            duration: 2000,
+            begin: function(){
+                $("#comment").css("display", "block")
+            },
+            complete: function () {
+                $blackboard.css("display", "none")
+            }
+        })
+    })
+
     scheduleToUpdateHowLongWeHaveFallenInLoveLoop(true)
-    $("#blackboard").css("display", "block")
 
     // 下一张图片的按钮 点击响应事件
     $("#nextPictureBtn").click(function () {
         const $picutreBg = $("#picutreBg");
-        const curPicNo = $picutreBg.data("picture-no") || 0;
-        const nextPicNo = (curPicNo >= 5) ? 1 : curPicNo + 1;
-        $picutreBg.data("picture-no", nextPicNo);
-        const urlPath = `img/${nextPicNo}.jpeg`;
-        $picutreBg.css("background-image", `url(${urlPath})`)
+        const curPicNo = $picutreBg.data("picture-no") || 1;
+
+        if (curPicNo < 5) {
+            const nextPicNo = (curPicNo >= 5) ? 1 : curPicNo + 1;
+            $picutreBg.data("picture-no", nextPicNo);
+            $picutreBg.css("background-image", `url(img/${nextPicNo}.jpeg)`)
+        } else {
+            $picutreBg.data("picture-no", 1);
+
+            // 回到首页
+            const $blackboard = $("#blackboard");
+            $blackboard.css("display", "block")
+
+            anime({
+                targets: '#blackboard',
+                opacity: "1",
+                width: $blackboard.data("origin-width"),
+                height: $blackboard.data("origin-height"),
+                duration: 2000
+            })
+
+            $("#comment").css("display", "none")
+        }
     })
 
     // 下一张图片的按钮 动画
