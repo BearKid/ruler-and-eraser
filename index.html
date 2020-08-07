@@ -1,3 +1,44 @@
 <html lang="cn">
-<h1>Start from here</h1>
+<link href="https://fonts.googleapis.com/css2?family=Sriracha&display=swap" rel="stylesheet">
+<style>
+    body {
+        background-image: url("img/3.jpeg");
+        background-size: cover;
+        background-position: center;
+    }
+    #title {
+        margin: 1em;
+        /*font-family: "Lucida Console", Monaco, monospace;*/
+        font-family: 'Sriracha', cursive;
+    }
+
+    #blackboard {
+        display: block;
+        padding: 2em 1em;
+        margin: 2em;
+        max-width: 1000px;
+        max-height: 500px;
+        background-color: rgb(0, 0, 0, 0.8);
+        text-align: center;
+        font-size: 1.5em;
+        color: #fff;
+        font-family: 'Sriracha', cursive;
+        border-radius: 5px;
+    }
+</style>
+<body style="font-size: 32px">
+<h1 id="title" style="text-align: center">Ruler And Eraser</h1>
+<div id="blackboard">
+    <p> 123 Days 15H 30M 40s</p>
+</div>
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.0/anime.min.js"></script>
+<script>
+    anime({
+        targets: '#title',
+        translateX: 0,
+        rotate: '1turn',
+        duration: 800
+    });
+</script>
 </html>
