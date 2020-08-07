@@ -1,6 +1,7 @@
 <html lang="cn">
 <meta charset="UTF-8">
 <link href="https://fonts.googleapis.com/css2?family=Sriracha&display=swap" rel="stylesheet">
+<link href="css/fontello.css" rel="stylesheet">
 
 <style>
     @font-face {
@@ -23,6 +24,7 @@
         /*font-family: "Lucida Console", Monaco, monospace;*/
         font-family: 'Sriracha', cursive;
         color: #e84511;
+        text-align: center
     }
 
     #blackboard {
@@ -46,17 +48,32 @@
         position: absolute;
         bottom: 0;
     }
+
+    #commentText {
+        text-align: center;
+        color: #fff;
+        font-size: 1.2em;
+        padding: 0.5em;
+    }
+
+    #nextPictureBtn {
+        color: #fff;
+        position: absolute;
+        bottom: 0.4em;
+        right: 10px;
+        font-size: 1.5em;
+    }
 </style>
-<body style="font-size: 32px">
-<h1 id="title" style="text-align: center">Ruler And Eraser</h1>
-<div id="blackboard">
-    <p id="blackboardText"></p>
-</div>
+<body id="picutreBg" style="font-size: 32px">
+
+<h1 id="title">Ruler And Eraser</h1>
+<div id="blackboard"><p id="blackboardText"></p></div>
 <div id="comment">
-    <!--    <p style="text-align: center; color: #fff; font-size: 1em;">Eraser每年都会过几次「生日」，只为了吃蛋糕</p>-->
-    <p id="commentText" style="text-align: center; color: #fff; font-size: 1.2em;">Eraser每年都会过几次「生日」—— 为了吃蛋糕</p>
+    <div id="commentText">Eraser每年都会过几次「生日」—— 为了吃蛋糕</div>
+    <i id="nextPictureBtn" class="icon-right-open-outline"></i>
 </div>
 </body>
+
 <script type="text/javascript" src="http://cdn.repository.webfont.com/wwwroot/js/wf/youziku.api.min.js"></script>
 <script type="text/javascript">
     $webfont.load("#commentText", "d19cf431dc9545a39f91a7b93a205bc5", "TianZhen");
@@ -87,8 +104,8 @@
     /**
      * 创建循环定时调度：更新【在一起的时长】
      */
-    function scheduleToUpdateHowLongWeHaveFallenInLoveLoop(updateOnceRightNow){
-        if (updateOnceRightNow === true){
+    function scheduleToUpdateHowLongWeHaveFallenInLoveLoop(updateOnceRightNow) {
+        if (updateOnceRightNow === true) {
             updateHowLongWeHaveFallenInLove();
         }
         setTimeout(function () {
@@ -96,16 +113,45 @@
             scheduleToUpdateHowLongWeHaveFallenInLoveLoop();
         }, 1000)
     }
+
 </script>
 <script>
+    // 标题 动画
     anime({
         targets: '#title',
         translateX: 0,
         rotate: '1turn',
-        duration: 800
+        // duration: 4000
     });
 
     scheduleToUpdateHowLongWeHaveFallenInLoveLoop(true)
     $("#blackboard").css("display", "block")
+
+    // 下一张图片的按钮 点击响应事件
+    $("#nextPictureBtn").click(function () {
+        const $picutreBg = $("#picutreBg");
+        const curPicNo = $picutreBg.data("picture-no") || 0;
+        const nextPicNo = (curPicNo >= 5) ? 1 : curPicNo + 1;
+        $picutreBg.data("picture-no", nextPicNo);
+        const urlPath = `img/${nextPicNo}.jpeg`;
+        $picutreBg.css("background-image", `url(${urlPath})`)
+    })
+
+    // 下一张图片的按钮 动画
+    anime({
+        targets: '#nextPictureBtn',
+        keyframes: [
+            {rotate: '0deg'},
+            {rotate: '-45deg'},
+            {rotate: '-90deg'},
+            {rotate: '-45deg'},
+            {rotate: '0deg'},
+            {rotate: '45deg'},
+            {rotate: '90deg'},
+            {rotate: '45deg'},
+        ],
+        duration: 20000,
+        loop: true
+    })
 </script>
 </html>
