@@ -14,8 +14,17 @@
 
     body {
         margin: 0;
+    }
+
+    #picutreBg {
         background-size: cover;
         background-position: center;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        top: 0;
+        left: 0;
     }
 
     .title {
@@ -75,7 +84,8 @@
         font-size: 1.5em;
     }
 </style>
-<body id="picutreBg" style="font-size: 32px">
+<body style="font-size: 32px">
+<div id="picutreBg"></div>
 
 <div id="blackboard">
     <div id="titleInBlackBoard" class="title">Ruler And Eraser</div>
@@ -86,7 +96,6 @@
     <i id="nextPictureBtn" class="icon-right-open-outline"></i>
 </div>
 </body>
-
 <script type="text/javascript" src="http://cdn.repository.webfont.com/wwwroot/js/wf/youziku.api.min.js"></script>
 <script type="text/javascript">
     $webfont.load("#commentText", "d19cf431dc9545a39f91a7b93a205bc5", "TianZhen");
@@ -160,7 +169,7 @@
             width: "0",
             height: "0",
             duration: 2000,
-            begin: function(){
+            begin: function () {
                 $("#comment").css("display", "block")
             },
             complete: function () {
@@ -176,13 +185,21 @@
         const $picutreBg = $("#picutreBg");
         const curPicNo = $picutreBg.data("picture-no") || 1;
 
-        if (curPicNo < 5) {
-            const nextPicNo = (curPicNo >= 5) ? 1 : curPicNo + 1;
-            $picutreBg.data("picture-no", nextPicNo);
-            $picutreBg.css("background-image", `url(img/${nextPicNo}.jpeg)`)
-        } else {
-            $picutreBg.data("picture-no", 1);
-
+        // 切换至下一张
+        const nextPicNo = (curPicNo >= 5) ? 1 : curPicNo + 1;
+        $picutreBg.data("picture-no", nextPicNo);
+        anime({
+            targets: '#picutreBg',
+            keyframes: [
+                // {opacity: [0, 1]},
+                {rotate: `${nextPicNo - 1}turn`}
+            ],
+            begin: function () {
+                $picutreBg.css("background-image", `url(img/${nextPicNo}.jpeg)`)
+            },
+            duration: 4000
+        })
+        if (curPicNo >= 5) {
             // 回到首页
             const $blackboard = $("#blackboard");
             $blackboard.css("display", "block")
