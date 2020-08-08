@@ -180,6 +180,40 @@
 
     scheduleToUpdateHowLongWeHaveFallenInLoveLoop(true)
 
+    const effects = [
+        // 右下角切入
+        {
+            rotate: ['60deg', '0deg'],
+            translateX: ['50em', '0em'],
+            top: ['20em', '0em'],
+        },
+        // 旋转 + 放大
+        {
+            rotate: ['30deg', '0deg'],
+            width: ["0", "100%"],
+            opacity: [0, 1]
+        },
+
+        {//旋转出现
+            rotate: ['60deg', '0deg'],
+            opacity: [0, 1]
+        },
+
+        {
+            // top: ["-100%", "200%", "200%", "0", "0"],
+            // left: ["0%", "0%", "-100%","-100%", "0"],
+            top: ["-100%", "200%", "0"],
+            easing: 'linear',
+            duration: 3000
+        },
+
+        {// 挣扎打开
+            width: ['30%', '40%', '50%', '40%', '30%', '50%', '70%', "100%"],
+            rotate: ['30deg', '80deg', '50deg', '20deg', '0deg', '-50deg', '-180deg', '0deg']
+        },
+
+    ]
+
     // 下一张图片的按钮 点击响应事件
     $("#nextPictureBtn").click(function () {
         const $picutreBg = $("#picutreBg");
@@ -188,17 +222,16 @@
         // 切换至下一张
         const nextPicNo = (curPicNo >= 5) ? 1 : curPicNo + 1;
         $picutreBg.data("picture-no", nextPicNo);
-        anime({
+        const effectBasic= {
             targets: '#picutreBg',
-            keyframes: [
-                // {opacity: [0, 1]},
-                {rotate: `${nextPicNo - 1}turn`}
-            ],
             begin: function () {
                 $picutreBg.css("background-image", `url(img/${nextPicNo}.jpeg)`)
             },
-            duration: 4000
-        })
+            duration: 4000,
+            // easing: 'easeOutElastic(9, 1)',
+            // easing: 'spring(0, 80, 5, 0)',
+        }
+        anime(Object.assign({}, effectBasic, effects[(nextPicNo - 1) % effects.length]));
         if (curPicNo >= 5) {
             // 回到首页
             const $blackboard = $("#blackboard");
