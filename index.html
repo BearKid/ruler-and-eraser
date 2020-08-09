@@ -136,51 +136,39 @@
         }, 1000)
     }
 
-</script>
-<script>
-    // 初始化背景
-    $("#picutreBg").css("background-image", "url(img/1.jpeg)")
+    function showTheComment(idx) {
+        $("#commentText").html(COMMENTS[idx]);
+        $('#comment').css("display", "block");
+    }
 
-    // 标题 动画
-    anime({
-        targets: '.title',
-        translateX: 0,
-        keyframes: [
-            {rotate: '0turn'},
-            {rotate: '8deg'},
-            {rotate: '-8deg'},
-            {rotate: '0deg'},
-            {rotate: '4deg'},
-            {rotate: '0deg'},
-        ],
-        // easing: 'easeOutElastic(9, 1)',
-        easing: 'spring(0, 90, 5, 0)',
-        loop: true,
-        endDelay: 5000
-    });
+    function hideTheComment() {
+        $("#comment").css("display", "none");
+    }
 
-    $("#titleInBlackBoard").click(function () {
-        const $blackboard = $("#blackboard")
-        $blackboard.data("origin-height", $blackboard.height())
-        $blackboard.data("origin-width", $blackboard.width())
+    function setBackgroundWithHomePagePic() {
+        $("#picutreBg").css("background-image", "url(img/1.jpeg)")
+    }
+
+    function showTitleBoardOfBlackboard() {
+        const $blackboard = $("#blackboard");
+        $blackboard.css("display", "block")
+
         anime({
             targets: '#blackboard',
-            opacity: "0",
-            width: "0",
-            height: "0",
-            duration: 2000,
-            begin: function () {
-                $("#comment").css("display", "block")
-            },
-            complete: function () {
-                $blackboard.css("display", "none")
-            }
+            opacity: "1",
+            width: $blackboard.data("origin-width"),
+            height: $blackboard.data("origin-height"),
+            duration: 2000
         })
-    })
+    }
 
-    scheduleToUpdateHowLongWeHaveFallenInLoveLoop(true)
+    function showHomePage() {
+        setBackgroundWithHomePagePic();
+        showTitleBoardOfBlackboard();
+        $("#comment").css("display", "none")
+    }
 
-    const effects = [
+    const EFFECTS = [
         // 右下角切入
         {
             rotate: ['60deg', '0deg'],
@@ -202,74 +190,129 @@
         {
             // top: ["-100%", "200%", "200%", "0", "0"],
             // left: ["0%", "0%", "-100%","-100%", "0"],
-            top: ["-100%", "200%", "0"],
-            easing: 'linear',
-            duration: 3000
+            top: ["200%", "0"],
+            // easing: 'linear',
+            easing: 'spring(0, 80, 5, 0)'
         },
 
         {// 挣扎打开
             width: ['30%', '40%', '50%', '40%', '30%', '50%', '70%', "100%"],
-            rotate: ['30deg', '80deg', '50deg', '20deg', '0deg', '-50deg', '-180deg', '0deg']
+            rotate: ['30deg', '80deg', '50deg', '20deg', '0deg', '-50deg', '-180deg', '0deg'],
         },
 
     ]
-    const comments = [
-        "Ruler为什么叫Ruler，因为Eraser经常叫他「Stright Boy」",
-        "Eraser每年都会过几次「生日」—— 为了吃蛋糕",
-        "Eraser许愿中，Ruler请准备好你的钱包",
-        ""
+    const COMMENTS = [
+        "Ruler为什么叫Ruler?<br/>因为Eraser经常叫他「Stright Boy」",
+        "Eraser每年都会过几次「生日」<br/>为了吃「蛋糕」",
+        "Eraser许愿中<br/>(Ruler请准备好你的「钱包」)",
+        "手抓饼、寿司、柠檬鸡爪、乌龙茶水蜜桃冻、杨枝甘露<br/>给Eraser「点赞」",
+        "Ruler祝Eraser梦想成真<br/>Eraser会给他一个「白眼」：你就只会说"
     ]
 
-    // 下一张图片的按钮 点击响应事件
-    $("#nextPictureBtn").click(function () {
-        const $picutreBg = $("#picutreBg");
-        const curPicNo = $picutreBg.data("picture-no") || 1;
-
+    function switchToNextPicPage($picutreBg, nextPicIdx) {
         // 切换至下一张
-        const nextPicNo = (curPicNo >= 5) ? 1 : curPicNo + 1;
-        $picutreBg.data("picture-no", nextPicNo);
-        const effectBasic= {
+        const effectBasic = {
             targets: '#picutreBg',
+            duration: 3000,
             begin: function () {
-                $picutreBg.css("background-image", `url(img/${nextPicNo}.jpeg)`)
+                hideTheComment();
+                $picutreBg.css("background-image", `url(img/${nextPicIdx + 1}.jpeg)`);
             },
-            duration: 4000,
+            complete: function () {
+                showTheComment(nextPicIdx);
+            }
             // easing: 'easeOutElastic(9, 1)',
             // easing: 'spring(0, 80, 5, 0)',
         }
-        anime(Object.assign({}, effectBasic, effects[(nextPicNo - 1) % effects.length]));
-        if (curPicNo >= 5) {
-            // 回到首页
-            const $blackboard = $("#blackboard");
-            $blackboard.css("display", "block")
+        anime(Object.assign({}, effectBasic, EFFECTS[(nextPicIdx) % EFFECTS.length]));
+    }
 
+    function switchToNextPicOrHomePage() {
+        const $picutreBg = $("#picutreBg");
+        const idxOptional = $picutreBg.data("cur-picture-idx");
+        const curPicIdx = (idxOptional == undefined) ? -1 : idxOptional;
+
+        const nextPicIdx = (curPicIdx >= 4) ? -1 : curPicIdx + 1;
+        $picutreBg.data("cur-picture-idx", nextPicIdx);
+
+        if (nextPicIdx <= -1) {
+            showHomePage();
+        } else {
+            switchToNextPicPage($picutreBg, nextPicIdx);
+        }
+    }
+
+    function initTitleBoard() {
+        // 标题 动画
+        anime({
+            targets: '.title',
+            translateX: 0,
+            keyframes: [
+                {rotate: '0turn'},
+                {rotate: '8deg'},
+                {rotate: '-8deg'},
+                {rotate: '0deg'},
+                {rotate: '4deg'},
+                {rotate: '0deg'},
+            ],
+            // easing: 'easeOutElastic(9, 1)',
+            easing: 'spring(0, 90, 5, 0)',
+            loop: true,
+            endDelay: 5000
+        });
+
+        $("#titleInBlackBoard").click(function () {
+            const $blackboard = $("#blackboard")
+            $blackboard.data("origin-height", $blackboard.height())
+            $blackboard.data("origin-width", $blackboard.width())
             anime({
                 targets: '#blackboard',
-                opacity: "1",
-                width: $blackboard.data("origin-width"),
-                height: $blackboard.data("origin-height"),
-                duration: 2000
+                opacity: "0",
+                width: "0",
+                height: "0",
+                duration: 2000,
+                begin: function () {
+                    switchToNextPicOrHomePage()
+                },
+                complete: function () {
+                    $blackboard.css("display", "none")
+                }
             })
+        })
+    }
 
-            $("#comment").css("display", "none")
-        }
+    function initNextPicBtn() {
+        // 下一张图片的按钮 动画
+        anime({
+            targets: '#nextPictureBtn',
+            keyframes: [
+                {rotate: '0deg'},
+                {rotate: '-45deg'},
+                {rotate: '-90deg'},
+                {rotate: '-45deg'},
+                {rotate: '0deg'},
+                {rotate: '45deg'},
+                {rotate: '90deg'},
+                {rotate: '45deg'},
+            ],
+            duration: 20000,
+            loop: true
+        })
+    }
+</script>
+<script>
+
+    // 初始化背景
+    setBackgroundWithHomePagePic();
+    initTitleBoard();
+
+    scheduleToUpdateHowLongWeHaveFallenInLoveLoop(true);
+
+    // 下一张图片的按钮 点击响应事件
+    $("#nextPictureBtn").click(function () {
+        switchToNextPicOrHomePage();
     })
 
-    // 下一张图片的按钮 动画
-    anime({
-        targets: '#nextPictureBtn',
-        keyframes: [
-            {rotate: '0deg'},
-            {rotate: '-45deg'},
-            {rotate: '-90deg'},
-            {rotate: '-45deg'},
-            {rotate: '0deg'},
-            {rotate: '45deg'},
-            {rotate: '90deg'},
-            {rotate: '45deg'},
-        ],
-        duration: 20000,
-        loop: true
-    })
+    initNextPicBtn();
 </script>
 </html>
